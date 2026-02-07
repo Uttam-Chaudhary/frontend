@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../../common/Layout";
 import { useForm } from "react-hook-form";
@@ -7,8 +7,13 @@ import toast from "react-hot-toast";
 import { AuthContext } from "../../context/Auth";
 
 const Login = () => {
-  const {login} = useContext(AuthContext);
+  const { user, login } = useContext(AuthContext);
   const navigate = useNavigate();
+  useEffect(() => {
+    if (user) {
+      navigate("/account/dashboard");
+    }
+  }, [user, navigate]);
   const {
     handleSubmit,
     register,
@@ -33,15 +38,15 @@ const Login = () => {
       if (result.status === 200) {
         //console.log(result.user.email);
         const userInfo = {
-           id: result.user.id,
-           name: result.user.name,
-           email: result.user.email,
-           token: result.token,
+          id: result.user.id,
+          name: result.user.name,
+          email: result.user.email,
+          token: result.token,
         };
-        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        localStorage.setItem("userInfoLMS", JSON.stringify(userInfo));
         login(userInfo);
         toast.success(result.message);
-         navigate("/account/dashboard");
+        navigate("/account/dashboard");
       } else {
         toast.error(result.message);
         const errors = result.errors;

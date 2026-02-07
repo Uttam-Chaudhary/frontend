@@ -11,6 +11,8 @@ import Register from "./components/pages/Register";
 import { Toaster } from "react-hot-toast";
 import Dashboard from "./components/pages/account/Dashboard";
 import { RequireAuth } from "./components/common/RequireAuth";
+import CreateCourses from "./components/pages/account/courses/CreateCourses";
+import EditCourse from "./components/pages/account/courses/EditCourse";
 
 function App() {
   return (
@@ -33,6 +35,24 @@ function App() {
             element={
               <RequireAuth>
                 <Dashboard/>
+              </RequireAuth>
+            }
+          />
+
+          <Route
+            path="/account/courses/create"
+            element={
+              <RequireAuth>
+                <CreateCourses/>
+              </RequireAuth>
+            }
+          />
+
+          <Route
+            path="/account/courses/edit/:id"
+            element={
+              <RequireAuth>
+                <EditCourse/>
               </RequireAuth>
             }
           />
