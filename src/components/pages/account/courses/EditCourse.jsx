@@ -1,13 +1,16 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useState } from "react";
 import Layour from "../../../common/Layout";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import UserSidebar from "../../../common/UserSidebar";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { apiUrl, token } from "../../../common/Config";
+import ManageOutcome from "./ManageOutcome";
+import ManageRequirement from "./ManageRequirement";
 
 const EditCourse = () => {
   const params = useParams();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [levels, setLevels] = useState([]);
@@ -36,13 +39,12 @@ const EditCourse = () => {
           //console.log("Success");
           reset({
             title: result.data.title,
-            category: result.data.category,
-            level: result.data.level,
-            language: result.data.language,
+            category: result.data.category_id,
+            level: result.data.level_id,
+            language: result.data.language_id,
             description: result.data.description,
-            sell_price: result.data.sell_price,
+            sell_price: result.data.price,
             cross_price: result.data.cross_price,
-
           });
         } else {
           console.log("Something went wrong");
@@ -55,8 +57,9 @@ const EditCourse = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await fetch(`${apiUrl}/courses`, {
-        method: "POST",
+      setLoading(true);
+      const response = await fetch(`${apiUrl}/courses/${params.id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -66,9 +69,10 @@ const EditCourse = () => {
       });
 
       const result = await response.json();
-      //console.log(result);
+      console.log(result);
 
       if (result.status === 200) {
+        setLoading(false);
         //console.log("Success");
         toast.success(result.message);
         // navigate("/account/courses/edit/"+ result.data.id);
@@ -96,7 +100,7 @@ const EditCourse = () => {
         },
       });
       const result = await response.json();
-      console.log(result);
+      //console.log(result);
 
       if (result.status === 200) {
         //console.log("Success");
@@ -111,7 +115,7 @@ const EditCourse = () => {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     courseMetaData();
   }, []);
 
@@ -180,7 +184,7 @@ const EditCourse = () => {
                             {categories &&
                               categories.map((category) => {
                                 return (
-                                  <option value={category.id}>
+                                  <option key={category.id} value={category.id}>
                                     {category.name}
                                   </option>
                                 );
@@ -207,7 +211,9 @@ const EditCourse = () => {
                             {levels &&
                               levels.map((level) => {
                                 return (
-                                  <option value={level.id}>{level.name}</option>
+                                  <option key={level.id} value={level.id}>
+                                    {level.name}
+                                  </option>
                                 );
                               })}
                           </select>
@@ -233,7 +239,7 @@ const EditCourse = () => {
                             {languages &&
                               languages.map((language) => {
                                 return (
-                                  <option value={language.id}>
+                                  <option key={language.id} value={language.id}>
                                     {language.name}
                                   </option>
                                 );
@@ -273,7 +279,7 @@ const EditCourse = () => {
                             Sell Price
                           </label>
                           <input
-                          {...register("sell_price", {
+                            {...register("sell_price", {
                               required: "The sell price field is required",
                             })}
                             type="text"
@@ -293,19 +299,24 @@ const EditCourse = () => {
                             Cross Price
                           </label>
                           <input
-                          {...register("cross_price")}
+                            {...register("cross_price")}
                             type="text"
                             className={`form-control`}
                             placeholder="Cross Price"
                             id="cross_price"
                           />
                         </div>
-                        <button className="btn btn-primary">Update</button>
+                        <button disabled={loading} className="btn btn-primary">
+                          {loading == false ? `Update` : `Please wait...`}
+                        </button>
                       </div>
                     </div>
                   </form>
                 </div>
-                <div className="col-md-5"></div>
+                <div className="col-md-5">
+                  <ManageOutcome />
+                  <ManageRequirement />
+                </div>
               </div>
             </div>
           </div>
